@@ -1,3 +1,4 @@
+[![Downloads](https://img.shields.io/github/downloads/denbkh/stoneshard-save-editor/total.svg)](https://github.com/denbkh/stoneshard-save-editor/releases)
 # Stoneshard save editor
 
 Save file editor for [Stoneshard](https://store.steampowered.com/app/625960/Stoneshard/) (respec your character)
