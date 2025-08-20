@@ -512,7 +512,3 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-
-# User-specific stuff (added later, not in above template)
-#.idea/.idea.StoneshardSaveEditor/.name
-.idea/**/.name
