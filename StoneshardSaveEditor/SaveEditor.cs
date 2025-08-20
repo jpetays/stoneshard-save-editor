@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
@@ -15,7 +14,7 @@ namespace StoneshardSaveEditor
     {
         private readonly string _saveFilePath;
         private readonly JObject _rootJsonObject;
-        private readonly JObject _moneybag;
+        private readonly JArray _inventoryDataList;
         public string BackupFilePath { get; private set; }
         public CharacterData Character { get; }
 
@@ -24,7 +23,7 @@ namespace StoneshardSaveEditor
             _saveFilePath = saveFilePath;
 
             _rootJsonObject = Utils.ReadJson(_saveFilePath);
-            _moneybag = GetMoney(_rootJsonObject["inventoryDataList"] as JArray);
+            _inventoryDataList = _rootJsonObject["inventoryDataList"] as JArray;
             Character = new CharacterData();
             Character.Abilities = new BindingList<string>();
 
@@ -39,7 +38,7 @@ namespace StoneshardSaveEditor
             Character.StatsPoints = charDataMap.Value<int>("AP"); // strange
             Character.Level = charDataMap.Value<int>("LVL");
             Character.XP = charDataMap.Value<int>("XP");
-            Character.Money = (_moneybag?["Stack"] ?? 0).Value<int>();
+            Character.Money = GetMoney();
             Character.HP = charDataMap.Value<int>("HP");
             Character.MP = charDataMap.Value<int>("MP");
             Character.XPGain = charDataMap.Value<int>("Received_XP");
@@ -69,49 +68,27 @@ namespace StoneshardSaveEditor
             }
             return;
 
-            JObject GetMoney(JArray parentArray)
+            string GetMoney()
             {
-#if false
-    [
-      "o_inv_moneybag",
-      {
-        "Material": "leather",
-        "max_charge": 1.0,
-        "idName": "moneybag",
-        "Duration": 0.0,
-        "is_cursed": 0.0,
-        "MaxDuration": 0.0,
-        "i_index": 0.0,
-        "Stack": 250.0,
-        "Main": [],
-        "identified": 1.0,
-        "charge": 1.0,
-        "Effects_Duration": 0.0,
-        "lootList": [],
-        "is_execute": 1.0
-      },
-      0.0,
-      0.0,
-      1.0,
-      1.0,
-      0.0,
-      false,
-      0.0,
-      "N/A"
-    ],
-#endif
-                if (!(parentArray.Children()
-                        .FirstOrDefault(x => x is JArray array && array.Count >= 2 &&
-                                             "o_inv_moneybag".Equals($"{array[0]}")) is JArray jArray))
+                var countMoney = 0;
+                var countBags = 0;
+                foreach (var jToken in _inventoryDataList!)
                 {
-                    return null;
+                    if (!(jToken is JArray jArray) || jArray.Count <= 2 || !"o_inv_moneybag".Equals($"{jArray[0]}"))
+                    {
+                        continue;
+                    }
+                    if (!(jArray[1] is JObject moneybag) || !"moneybag".Equals($"{moneybag["idName"]}") ||
+                        moneybag["Stack"] == null)
+                    {
+                        return null;
+                    }
+                    countMoney += (int)moneybag["Stack"].Value<double>();
+                    countBags += 1;
                 }
-                var moneybag = jArray[1] as JObject;
-                if (!"moneybag".Equals($"{moneybag?["idName"]}") || moneybag?["Stack"] == null)
-                {
-                    return null;
-                }
-                return moneybag;
+                return countBags < 2
+                    ? $"{countMoney}"
+                    : $"{countMoney} in {countBags} bag{(countBags > 1 ? "s" : "")}";
             }
         }
 
@@ -140,10 +117,6 @@ namespace StoneshardSaveEditor
             charDataMap["Immunity"] = (float)Character.Immunity;
             charDataMap["Fatigue"] = (float)Character.Fatigue;
             charDataMap["Pain"] = (float)Character.Pain;
-            if (_moneybag != null)
-            {
-                _moneybag["Stack"] = (float)(Character.Money);
-            }
 
             JArray skillsArray = (JArray)_rootJsonObject["skillsDataMap"]!["skillsAllDataList"]!;
             for (int i = 0; i < skillsArray.Count; i += 5)
