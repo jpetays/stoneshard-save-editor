@@ -14,6 +14,7 @@ namespace StoneshardSaveEditor
         public MainForm()
         {
             InitializeComponent();
+            Additional.Visible = false;
             saveFolderTextBox.Text = Path.Combine(
                                     Environment.GetFolderPath(
                                     Environment.SpecialFolder.LocalApplicationData),
@@ -97,6 +98,10 @@ namespace StoneshardSaveEditor
             abilityListBox.DataSource = _saveEditor.Character.Abilities;
             abilityListBox.ClearSelected();
             saveButton.Enabled = false;
+            if (additionalCharDataGroupBox.Enabled == false)
+            {
+                Additional_Click(this, null);
+            }
         }
 
         private void EnableSaveButton(object sender, EventArgs e)
