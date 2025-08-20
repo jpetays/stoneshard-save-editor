@@ -23,4 +23,5 @@ Save file editor for [Stoneshard](https://store.steampowered.com/app/625960/Ston
 
 1. Import changes from [Basedfloppa/stoneshard-save-editor](https://github.com/Basedfloppa/stoneshard-save-editor) to see Additional character data
 2. Sort save files using filesystem last changed date to see newest file first (under the character)
-3. Add Money field to help your financial issues (should work at least with default money purse you have) 
+3. Add Money field to help your financial issues (should work at least with default money purse you have)
+4. Seems to work with Beta 0.9.3.7
