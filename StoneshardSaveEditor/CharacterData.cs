@@ -14,6 +14,7 @@ namespace StoneshardSaveEditor
         public int StatsPoints { get; set; }
         public int Level { get; set; }
         public int XP { get; set; }
+        public int Money { get; set; }
         public int XPGain { get; set; }
         public int HP {  get; set; }
         public int MP { get; set; }

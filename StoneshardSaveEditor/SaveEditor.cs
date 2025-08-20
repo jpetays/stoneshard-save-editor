@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
@@ -14,6 +15,7 @@ namespace StoneshardSaveEditor
     {
         private readonly string _saveFilePath;
         private readonly JObject _rootJsonObject;
+        private readonly JObject _moneybag;
         public string BackupFilePath { get; private set; }
         public CharacterData Character { get; }
 
@@ -21,41 +23,41 @@ namespace StoneshardSaveEditor
         {
             _saveFilePath = saveFilePath;
 
-            _rootJsonObject     = Utils.ReadJson(_saveFilePath);
-            Character           = new CharacterData();
+            _rootJsonObject = Utils.ReadJson(_saveFilePath);
+            _moneybag = GetMoney(_rootJsonObject["inventoryDataList"] as JArray);
+            Character = new CharacterData();
             Character.Abilities = new BindingList<string>();
 
-            var charDataMap         = _rootJsonObject["characterDataMap"]!;
-            Character.Name          = charDataMap.Value<string>("nameKey");
-            Character.Strength      = charDataMap.Value<int>("STR"); // strenght
-            Character.Agility       = charDataMap.Value<int>("AGL"); // agility
-            Character.Perception    = charDataMap.Value<int>("PRC"); // perception
-            Character.Vitality      = charDataMap.Value<int>("Vitality"); 
-            Character.Willpower     = charDataMap.Value<int>("WIL"); // willpower
+            var charDataMap = _rootJsonObject["characterDataMap"]!;
+            Character.Name = charDataMap.Value<string>("nameKey");
+            Character.Strength = charDataMap.Value<int>("STR"); // strenght
+            Character.Agility = charDataMap.Value<int>("AGL"); // agility
+            Character.Perception = charDataMap.Value<int>("PRC"); // perception
+            Character.Vitality = charDataMap.Value<int>("Vitality");
+            Character.Willpower = charDataMap.Value<int>("WIL"); // willpower
             Character.AbilityPoints = charDataMap.Value<int>("SP"); // strange
-            Character.StatsPoints   = charDataMap.Value<int>("AP"); // strange
-            Character.Level         = charDataMap.Value<int>("LVL");
-            Character.XP            = charDataMap.Value<int>("XP");
-            Character.HP            = charDataMap.Value<int>("HP");
-            Character.MP            = charDataMap.Value<int>("MP");
-            Character.XPGain        = charDataMap.Value<int>("Received_XP");
-            Character.Sanity        = charDataMap.Value<int>("Sanity");
-            Character.Morale        = charDataMap.Value<int>("Morale");
-            Character.Intoxication  = charDataMap.Value<int>("Intoxication");
-            Character.Thirst        = charDataMap.Value<int>("Thirsty");
-            Character.Hunger        = charDataMap.Value<int>("Hunger");
-            Character.Immunity      = charDataMap.Value<int>("Immunity");
-            Character.Fatigue       = charDataMap.Value<int>("Fatigue");
-            Character.Pain          = charDataMap.Value<int>("Pain");
+            Character.StatsPoints = charDataMap.Value<int>("AP"); // strange
+            Character.Level = charDataMap.Value<int>("LVL");
+            Character.XP = charDataMap.Value<int>("XP");
+            Character.Money = (_moneybag?["Stack"] ?? 0).Value<int>();
+            Character.HP = charDataMap.Value<int>("HP");
+            Character.MP = charDataMap.Value<int>("MP");
+            Character.XPGain = charDataMap.Value<int>("Received_XP");
+            Character.Sanity = charDataMap.Value<int>("Sanity");
+            Character.Morale = charDataMap.Value<int>("Morale");
+            Character.Intoxication = charDataMap.Value<int>("Intoxication");
+            Character.Thirst = charDataMap.Value<int>("Thirsty");
+            Character.Hunger = charDataMap.Value<int>("Hunger");
+            Character.Immunity = charDataMap.Value<int>("Immunity");
+            Character.Fatigue = charDataMap.Value<int>("Fatigue");
+            Character.Pain = charDataMap.Value<int>("Pain");
 
-
-            var timeDataMap    = _rootJsonObject["timeDataMap"]!;
+            var timeDataMap = _rootJsonObject["timeDataMap"]!;
             Character.GameTime = timeDataMap.Value<int>("months") + "M " +
                                  timeDataMap.Value<int>("days") + "d " +
                                  timeDataMap.Value<int>("hours") + "h " +
                                  timeDataMap.Value<int>("minutes") + "m " +
                                  timeDataMap.Value<int>("seconds") + "s";
-
 
             var skillsArray = (JArray)_rootJsonObject["skillsDataMap"]!["skillsAllDataList"]!;
             for (int i = 0; i < skillsArray.Count; i += 5)
@@ -65,40 +67,90 @@ namespace StoneshardSaveEditor
                     Character.Abilities.Add(skillsArray[i].ToObject<String>());
                 }
             }
+            return;
+
+            JObject GetMoney(JArray parentArray)
+            {
+#if false
+    [
+      "o_inv_moneybag",
+      {
+        "Material": "leather",
+        "max_charge": 1.0,
+        "idName": "moneybag",
+        "Duration": 0.0,
+        "is_cursed": 0.0,
+        "MaxDuration": 0.0,
+        "i_index": 0.0,
+        "Stack": 250.0,
+        "Main": [],
+        "identified": 1.0,
+        "charge": 1.0,
+        "Effects_Duration": 0.0,
+        "lootList": [],
+        "is_execute": 1.0
+      },
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      0.0,
+      false,
+      0.0,
+      "N/A"
+    ],
+#endif
+                if (!(parentArray.Children()
+                        .FirstOrDefault(x => x is JArray array && array.Count >= 2 &&
+                                             "o_inv_moneybag".Equals($"{array[0]}")) is JArray jArray))
+                {
+                    return null;
+                }
+                var moneybag = jArray[1] as JObject;
+                if (!"moneybag".Equals($"{moneybag?["idName"]}") || moneybag?["Stack"] == null)
+                {
+                    return null;
+                }
+                return moneybag;
+            }
         }
 
         public void Save()
         {
             var charDataMap = _rootJsonObject["characterDataMap"]!;
 
-            charDataMap["STR"]          = (float)Character.Strength;
-            charDataMap["AGL"]          = (float)Character.Agility;
-            charDataMap["PRC"]          = (float)Character.Perception;
-            charDataMap["Vitality"]     = (float)Character.Vitality;
-            charDataMap["WIL"]          = (float)Character.Willpower;
-            charDataMap["SP"]           = (float)Character.AbilityPoints; //strange
-            charDataMap["AP"]           = (float)Character.StatsPoints; //strange
-            charDataMap["WIL"]          = (float)Character.Willpower;
-            charDataMap["LVL"]          = (float)Character.Level;
-            charDataMap["MP"]           = (float)Character.MP;
-            charDataMap["Hp"]           = (float)Character.HP;
-            charDataMap["XP"]           = (float)Character.XP;
-            charDataMap["Recieved_XP"]  = (float)Character.XPGain;
-            charDataMap["Sanity"]       = (float)Character.Sanity;
-            charDataMap["Morale"]       = (float)Character.Morale;
+            charDataMap["STR"] = (float)Character.Strength;
+            charDataMap["AGL"] = (float)Character.Agility;
+            charDataMap["PRC"] = (float)Character.Perception;
+            charDataMap["Vitality"] = (float)Character.Vitality;
+            charDataMap["WIL"] = (float)Character.Willpower;
+            charDataMap["SP"] = (float)Character.AbilityPoints; //strange
+            charDataMap["AP"] = (float)Character.StatsPoints; //strange
+            charDataMap["WIL"] = (float)Character.Willpower;
+            charDataMap["LVL"] = (float)Character.Level;
+            charDataMap["MP"] = (float)Character.MP;
+            charDataMap["Hp"] = (float)Character.HP;
+            charDataMap["XP"] = (float)Character.XP;
+            charDataMap["Recieved_XP"] = (float)Character.XPGain;
+            charDataMap["Sanity"] = (float)Character.Sanity;
+            charDataMap["Morale"] = (float)Character.Morale;
             charDataMap["Intoxication"] = (float)Character.Intoxication;
-            charDataMap["Thirsty"]      = (float)Character.Thirst;
-            charDataMap["Hunger"]       = (float)Character.Hunger;
-            charDataMap["Immunity"]     = (float)Character.Immunity;
-            charDataMap["Fatigue"]      = (float)Character.Fatigue;
-            charDataMap["Pain"]         = (float)Character.Pain;
-
+            charDataMap["Thirsty"] = (float)Character.Thirst;
+            charDataMap["Hunger"] = (float)Character.Hunger;
+            charDataMap["Immunity"] = (float)Character.Immunity;
+            charDataMap["Fatigue"] = (float)Character.Fatigue;
+            charDataMap["Pain"] = (float)Character.Pain;
+            if (_moneybag != null)
+            {
+                _moneybag["Stack"] = (float)(Character.Money);
+            }
 
             JArray skillsArray = (JArray)_rootJsonObject["skillsDataMap"]!["skillsAllDataList"]!;
             for (int i = 0; i < skillsArray.Count; i += 5)
             {
                 var jToken = skillsArray[i + 1];
-                if (jToken.ToObject<int>() == 1 && Character.Abilities.Contains(skillsArray[i].ToObject<String>()) == false)
+                if (jToken.ToObject<int>() == 1 &&
+                    Character.Abilities.Contains(skillsArray[i].ToObject<String>()) == false)
                 {
                     jToken.Replace(0f);
                 }
@@ -121,9 +173,9 @@ namespace StoneshardSaveEditor
             {
                 using (var outputStream = new DeflaterOutputStream(fileStream))
                 {
-                        var bytes = Encoding.UTF8.GetBytes(jsonAndMd5);
-                        outputStream.Write(bytes, 0, bytes.Length);
-                        outputStream.WriteByte(0);
+                    var bytes = Encoding.UTF8.GetBytes(jsonAndMd5);
+                    outputStream.Write(bytes, 0, bytes.Length);
+                    outputStream.WriteByte(0);
                 }
             }
         }
@@ -134,7 +186,7 @@ namespace StoneshardSaveEditor
             //salt: "stOne!characters_v1!" + character_N + "!" + save_folder + "!shArd"
             string[] pathParts = _saveFilePath.Split(Path.DirectorySeparatorChar);
             var salt = "stOne!characters_v1!" + pathParts[pathParts.Length - 3] +
-                        "!" + pathParts[pathParts.Length - 2] + "!shArd";
+                       "!" + pathParts[pathParts.Length - 2] + "!shArd";
             //var salt = "stOne!characters_v1!shArd";
             var md5Input = Encoding.UTF8.GetBytes(jsonString + salt);
             var result = new StringBuilder(32);
@@ -155,7 +207,7 @@ namespace StoneshardSaveEditor
             var saveDir = Path.GetDirectoryName(_saveFilePath);
             BackupFilePath = saveDir + " " + DateTime.Now.ToString("s").Replace(':', '_') + ".backup.zip";
             ZipFile.CreateFromDirectory(
-            saveDir, BackupFilePath, CompressionLevel.Optimal, true);
+                saveDir, BackupFilePath, CompressionLevel.Optimal, true);
         }
     }
 }
