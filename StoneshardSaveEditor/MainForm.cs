@@ -141,16 +141,6 @@ namespace StoneshardSaveEditor
                 this.Height += 100;
                 this.additionalCharDataGroupBox.Enabled = true;
             }
-            else
-            {
-                this.Height -= 100;
-                this.additionalCharDataGroupBox.Enabled = false;
-            }
-        }
-
-        private void MoneyTextBox_TextChanged(object sender, EventArgs e)
-        {
-            EnableSaveButton(sender, e);
         }
     }
 }
