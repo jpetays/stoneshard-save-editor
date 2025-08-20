@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -57,7 +58,7 @@ namespace StoneshardSaveEditor
                 var parent = new TreeNode(Path.GetFileName(allSavesForOneCharDir) + " " + charName);
                 parent.ForeColor = Color.Gray;
 
-                foreach (var oneSaveDir in Directory.EnumerateDirectories(allSavesForOneCharDir))
+                foreach (var oneSaveDir in SortedSaveFiles(allSavesForOneCharDir))
                 {
                         FileInfo fileInfo  = new FileInfo(oneSaveDir);
                         var saveMapJson    = Utils.ReadJson(Path.Combine(oneSaveDir, "save.map"));
@@ -69,6 +70,21 @@ namespace StoneshardSaveEditor
                 }
 
                 SaveTreeBiew.Nodes.Add(parent);
+            }
+            return;
+
+            List<string> SortedSaveFiles(string directory)
+            {
+                var directories = new List<Tuple<string, DateTime>>();
+                foreach (var dirname in Directory.EnumerateDirectories(directory))
+                {
+                    var fileInfo = new FileInfo(dirname);
+                    directories.Add(new Tuple<string, DateTime>(dirname, fileInfo.LastWriteTime));
+                }
+                return directories
+                    .OrderBy(x => x.Item2)
+                    .Reverse()
+                    .Select(x => x.Item1).ToList();
             }
         }
 
