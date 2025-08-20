@@ -18,3 +18,9 @@ Save file editor for [Stoneshard](https://store.steampowered.com/app/625960/Ston
 1. Increase the "Ability Points" value
 1. Click on the "Save" button
 1. Start the game, load the save file and choose new abilities
+
+## What's changed
+
+1. Import changes from [Basedfloppa/stoneshard-save-editor](https://github.com/Basedfloppa/stoneshard-save-editor) to see Additional character data
+2. Sort save files using filesystem last changed date to see newest file first (under the character)
+3. Add Money field to help your financial issues (should work at least with default money purse you have) 
