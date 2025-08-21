@@ -23,6 +23,7 @@ namespace StoneshardSaveEditor
             _saveFilePath = saveFilePath;
 
             _rootJsonObject = Utils.ReadJson(_saveFilePath);
+            //DebugSave.SaveJson(_saveFilePath, _rootJsonObject, isLoading: true, both: false);
             _inventoryDataList = _rootJsonObject["inventoryDataList"] as JArray;
             Character = new CharacterData();
             Character.Abilities = new BindingList<string>();
@@ -92,6 +93,7 @@ namespace StoneshardSaveEditor
                 return false;
             }
             Character.Money = FormatMoneyText(countBags: money.Item1, countMoney: money.Item2);
+            //DebugSave.SaveJson(_saveFilePath, _rootJsonObject, isLoading: false, both: false);
             return true;
         }
 
