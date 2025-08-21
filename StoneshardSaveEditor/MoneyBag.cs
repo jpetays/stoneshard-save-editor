@@ -47,7 +47,7 @@ namespace StoneshardSaveEditor
                     countMoney += MaxGoldInBag;
                     continue;
                 }
-                if (!(moneybag["lootList"] is JArray lootList) || lootList.Count == 0)
+                if (!(moneybag["lootList"] is JArray lootList))
                 {
                     return new Tuple<int, int>(-1, -1);
                 }
