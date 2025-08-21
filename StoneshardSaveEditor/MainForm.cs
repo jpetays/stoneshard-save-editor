@@ -20,6 +20,18 @@ namespace StoneshardSaveEditor
                                     Environment.GetFolderPath(
                                     Environment.SpecialFolder.LocalApplicationData),
                                     "StoneShard");
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length == 1)
+            {
+                return;
+            }
+            foreach (var arg in args.Skip(1))
+            {
+                if (arg.ToLower(CultureInfo.InvariantCulture).Equals("-autoload"))
+                {
+                    readAllSavesButton_Click(this, null);
+                }
+            }
         }
 
         private void readAllSavesButton_Click(object sender, EventArgs e)
