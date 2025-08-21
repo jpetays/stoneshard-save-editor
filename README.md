@@ -1,6 +1,6 @@
 # Stoneshard save editor
 
-Save file editor for [Stoneshard](https://store.steampowered.com/app/625960/Stoneshard/) (respec your character)
+Save file editor for [Stoneshard](https://store.steampowered.com/app/625960/Stoneshard/) (respec your character or infinite money hack)
 
 <img width="745" height="558" alt="2025-08-21_w_5092" src="https://github.com/user-attachments/assets/8190de9e-acb2-4963-a7a5-201f6ef27993" />
 
