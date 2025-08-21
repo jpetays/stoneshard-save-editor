@@ -37,10 +37,10 @@
             this.dataFolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.SaveTreeBiew = new System.Windows.Forms.TreeView();
             this.charDataGroupBox = new System.Windows.Forms.GroupBox();
+            this.MoneyButton = new System.Windows.Forms.Button();
             this.MoneyTextBox = new System.Windows.Forms.TextBox();
             this.characterDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.label1 = new System.Windows.Forms.Label();
-            this.Additional = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
             this.GameTimeTextBox = new System.Windows.Forms.TextBox();
             this.NameTextBox = new System.Windows.Forms.TextBox();
@@ -57,6 +57,7 @@
             this.AbilitiesGroupBox = new System.Windows.Forms.GroupBox();
             this.removeAbilityButton = new System.Windows.Forms.Button();
             this.abilityListBox = new System.Windows.Forms.ListBox();
+            this.Additional = new System.Windows.Forms.Button();
             this.XpLabel = new System.Windows.Forms.Label();
             this.LevelLabel = new System.Windows.Forms.Label();
             this.StatsPointsLabel = new System.Windows.Forms.Label();
@@ -168,6 +169,7 @@
             // 
             // charDataGroupBox
             // 
+            this.charDataGroupBox.Controls.Add(this.MoneyButton);
             this.charDataGroupBox.Controls.Add(this.MoneyTextBox);
             this.charDataGroupBox.Controls.Add(this.label1);
             this.charDataGroupBox.Controls.Add(this.saveButton);
@@ -202,6 +204,16 @@
             this.charDataGroupBox.TabStop = false;
             this.charDataGroupBox.Text = "Character Data";
             // 
+            // MoneyButton
+            // 
+            this.MoneyButton.Location = new System.Drawing.Point(224, 344);
+            this.MoneyButton.Name = "MoneyButton";
+            this.MoneyButton.Size = new System.Drawing.Size(107, 30);
+            this.MoneyButton.TabIndex = 43;
+            this.MoneyButton.Text = "Fix Money";
+            this.MoneyButton.UseVisualStyleBackColor = true;
+            this.MoneyButton.Click += new System.EventHandler(this.MoneyButton_Click);
+            // 
             // MoneyTextBox
             // 
             this.MoneyTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.characterDataBindingSource, "Money", true));
@@ -222,17 +234,6 @@
             this.label1.Size = new System.Drawing.Size(82, 22);
             this.label1.TabIndex = 41;
             this.label1.Text = "Money";
-            // 
-            // Additional
-            // 
-            this.Additional.Location = new System.Drawing.Point(24, 287);
-            this.Additional.Name = "Additional";
-            this.Additional.Size = new System.Drawing.Size(87, 27);
-            this.Additional.TabIndex = 8;
-            this.Additional.Text = "\\/";
-            this.Additional.UseVisualStyleBackColor = true;
-            this.Additional.Visible = false;
-            this.Additional.Click += new System.EventHandler(this.Additional_Click);
             // 
             // saveButton
             // 
@@ -395,6 +396,17 @@
             this.abilityListBox.Size = new System.Drawing.Size(209, 259);
             this.abilityListBox.TabIndex = 0;
             this.abilityListBox.SelectedValueChanged += new System.EventHandler(this.abilityListBox_SelectedValueChanged);
+            // 
+            // Additional
+            // 
+            this.Additional.Location = new System.Drawing.Point(24, 288);
+            this.Additional.Name = "Additional";
+            this.Additional.Size = new System.Drawing.Size(87, 27);
+            this.Additional.TabIndex = 8;
+            this.Additional.Text = "\\/";
+            this.Additional.UseVisualStyleBackColor = true;
+            this.Additional.Visible = false;
+            this.Additional.Click += new System.EventHandler(this.Additional_Click);
             // 
             // XpLabel
             // 
@@ -765,6 +777,8 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Button MoneyButton;
 
         private System.Windows.Forms.TextBox MoneyTextBox;
         private System.Windows.Forms.Label label1;

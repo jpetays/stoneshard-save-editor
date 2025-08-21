@@ -142,5 +142,10 @@ namespace StoneshardSaveEditor
                 this.additionalCharDataGroupBox.Enabled = true;
             }
         }
+
+        private void MoneyButton_Click(object sender, EventArgs e)
+        {
+            _saveEditor.FixMoney();
+        }
     }
 }

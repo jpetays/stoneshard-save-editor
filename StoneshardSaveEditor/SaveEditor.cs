@@ -38,7 +38,7 @@ namespace StoneshardSaveEditor
             Character.StatsPoints = charDataMap.Value<int>("AP"); // strange
             Character.Level = charDataMap.Value<int>("LVL");
             Character.XP = charDataMap.Value<int>("XP");
-            Character.Money = GetMoney();
+            Character.Money = CountMoney();
             Character.HP = charDataMap.Value<int>("HP");
             Character.MP = charDataMap.Value<int>("MP");
             Character.XPGain = charDataMap.Value<int>("Received_XP");
@@ -68,28 +68,22 @@ namespace StoneshardSaveEditor
             }
             return;
 
-            string GetMoney()
+            string CountMoney()
             {
-                var countMoney = 0;
-                var countBags = 0;
-                foreach (var jToken in _inventoryDataList!)
-                {
-                    if (!(jToken is JArray jArray) || jArray.Count <= 2 || !"o_inv_moneybag".Equals($"{jArray[0]}"))
-                    {
-                        continue;
-                    }
-                    if (!(jArray[1] is JObject moneybag) || !"moneybag".Equals($"{moneybag["idName"]}") ||
-                        moneybag["Stack"] == null)
-                    {
-                        return null;
-                    }
-                    countMoney += (int)moneybag["Stack"].Value<double>();
-                    countBags += 1;
-                }
-                return countBags < 2
-                    ? $"{countMoney}"
-                    : $"{countMoney} in {countBags} bag{(countBags > 1 ? "s" : "")}";
+                var money = MoneyBag.CountMoneyBags(_inventoryDataList);
+                return FormatMoneyText(money.Item1, money.Item2);
             }
+        }
+
+        private static string FormatMoneyText(int countMoney, int countBags)
+        {
+            return countBags == 1 ? $"{countMoney}" : $"{countMoney} ({countBags} bags)";
+        }
+
+        public void FixMoney()
+        {
+            var money = MoneyBag.FillMoneyBags(_inventoryDataList);
+            Character.Money = FormatMoneyText(money.Item1, money.Item2);
         }
 
         public void Save()
