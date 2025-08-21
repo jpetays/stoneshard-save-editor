@@ -165,6 +165,7 @@ namespace StoneshardSaveEditor
             // Unfortunately CharacterData does not implement INotifyPropertyChanged :-(
             // Incoming DataBindings happen on UI validation and there is nothing that triggers outgoing events.
             MoneyTextBox.Text = _saveEditor.Character.Money;
+            saveButton.Enabled = true;
         }
     }
 }
