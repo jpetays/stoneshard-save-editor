@@ -112,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="jsonData\o_inv_moneybag.json" />
-    <Content Include="jsonData\o_inv_moneybag_bak.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

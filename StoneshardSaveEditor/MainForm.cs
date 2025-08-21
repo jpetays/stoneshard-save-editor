@@ -145,7 +145,14 @@ namespace StoneshardSaveEditor
 
         private void MoneyButton_Click(object sender, EventArgs e)
         {
-            _saveEditor.FixMoney();
+            if (!_saveEditor.FixMoney())
+            {
+                MessageBox.Show($"Save file money bag(s) can not be updated",
+                    "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            // Unfortunately CharacterData does not implement INotifyPropertyChanged :-(
+            // Incoming DataBindings happen on UI validation and there is nothing that triggers outgoing events.
+            MoneyTextBox.Text = _saveEditor.Character.Money;
         }
     }
 }

@@ -71,19 +71,28 @@ namespace StoneshardSaveEditor
             string CountMoney()
             {
                 var money = MoneyBag.CountMoneyBags(_inventoryDataList);
-                return FormatMoneyText(money.Item1, money.Item2);
+                return FormatMoneyText(countBags: money.Item1, countMoney: money.Item2);
             }
         }
 
-        private static string FormatMoneyText(int countMoney, int countBags)
+        private static string FormatMoneyText(int countBags, int countMoney)
         {
+            if (countBags < 1 || countMoney < 0)
+            {
+                return "unsupported";
+            }
             return countBags == 1 ? $"{countMoney}" : $"{countMoney} ({countBags} bags)";
         }
 
-        public void FixMoney()
+        public bool FixMoney()
         {
             var money = MoneyBag.FillMoneyBags(_inventoryDataList);
-            Character.Money = FormatMoneyText(money.Item1, money.Item2);
+            if (money.Item1 < 1 || money.Item2 < 0)
+            {
+                return false;
+            }
+            Character.Money = FormatMoneyText(countBags: money.Item1, countMoney: money.Item2);
+            return true;
         }
 
         public void Save()
