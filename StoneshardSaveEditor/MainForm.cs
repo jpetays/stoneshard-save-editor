@@ -157,7 +157,7 @@ namespace StoneshardSaveEditor
 
         private void MoneyButton_Click(object sender, EventArgs e)
         {
-            if (!_saveEditor.FixMoney())
+            if (!_saveEditor.FixMoneyBags())
             {
                 MessageBox.Show($"Save file money bag(s) can not be updated",
                     "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);

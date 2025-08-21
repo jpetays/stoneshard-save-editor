@@ -12,6 +12,7 @@ namespace StoneshardSaveEditor
 {
     public class SaveEditor
     {
+        private const bool DebugSave = false;
         private readonly string _saveFilePath;
         private readonly JObject _rootJsonObject;
         private readonly JArray _inventoryDataList;
@@ -23,7 +24,7 @@ namespace StoneshardSaveEditor
             _saveFilePath = saveFilePath;
 
             _rootJsonObject = Utils.ReadJson(_saveFilePath);
-            //DebugSave.SaveJson(_saveFilePath, _rootJsonObject, isLoading: true, both: false);
+            if (DebugSave) StoneshardSaveEditor.DebugSave.SaveJson(_saveFilePath, _rootJsonObject, isLoading: true, both: false);
             _inventoryDataList = _rootJsonObject["inventoryDataList"] as JArray;
             Character = new CharacterData();
             Character.Abilities = new BindingList<string>();
@@ -39,7 +40,7 @@ namespace StoneshardSaveEditor
             Character.StatsPoints = charDataMap.Value<int>("AP"); // strange
             Character.Level = charDataMap.Value<int>("LVL");
             Character.XP = charDataMap.Value<int>("XP");
-            Character.Money = CountMoney();
+            Character.Money = CountMoneyBags();
             Character.HP = charDataMap.Value<int>("HP");
             Character.MP = charDataMap.Value<int>("MP");
             Character.XPGain = charDataMap.Value<int>("Received_XP");
@@ -69,31 +70,31 @@ namespace StoneshardSaveEditor
             }
             return;
 
-            string CountMoney()
+            string CountMoneyBags()
             {
                 var money = MoneyBag.CountMoneyBags(_inventoryDataList);
-                return FormatMoneyText(countBags: money.Item1, countMoney: money.Item2);
+                return FormatMoneyBagText(countBags: money.Item1, countMoney: money.Item2);
             }
         }
 
-        private static string FormatMoneyText(int countBags, int countMoney)
+        private static string FormatMoneyBagText(int countBags, int countMoney)
         {
             if (countBags < 1 || countMoney < 0)
             {
                 return "unsupported";
             }
-            return countBags == 1 ? $"{countMoney}" : $"{countMoney} ({countBags} bags)";
+            return $"{countMoney} ({countBags} bag{(countBags == 1 ? "" : "s")})";
         }
 
-        public bool FixMoney()
+        public bool FixMoneyBags()
         {
             var money = MoneyBag.FillMoneyBags(_inventoryDataList);
             if (money.Item1 < 1 || money.Item2 < 0)
             {
                 return false;
             }
-            Character.Money = FormatMoneyText(countBags: money.Item1, countMoney: money.Item2);
-            //DebugSave.SaveJson(_saveFilePath, _rootJsonObject, isLoading: false, both: false);
+            Character.Money = FormatMoneyBagText(countBags: money.Item1, countMoney: money.Item2);
+            if (DebugSave) StoneshardSaveEditor.DebugSave.SaveJson(_saveFilePath, _rootJsonObject, isLoading: false, both: false);
             return true;
         }
 
