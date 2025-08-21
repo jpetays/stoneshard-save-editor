@@ -210,7 +210,7 @@
             this.MoneyButton.Name = "MoneyButton";
             this.MoneyButton.Size = new System.Drawing.Size(107, 30);
             this.MoneyButton.TabIndex = 43;
-            this.MoneyButton.Text = "Fix Money";
+            this.MoneyButton.Text = "Fix Bag Money";
             this.MoneyButton.UseVisualStyleBackColor = true;
             this.MoneyButton.Click += new System.EventHandler(this.MoneyButton_Click);
             // 
@@ -233,7 +233,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(82, 22);
             this.label1.TabIndex = 41;
-            this.label1.Text = "Money";
+            this.label1.Text = "Bag Money";
             // 
             // saveButton
             // 
